@@ -581,7 +581,10 @@ def get_version_and_model_spread(devices):
                 "%s / %s"
                 % (
                     device.findtext(model_search) or "No Model",
-                    device.findtext(model_identifier_search,) or "No Model Identifier",
+                    device.findtext(
+                        model_identifier_search,
+                    )
+                    or "No Model Identifier",
                 )
             )
     version_counts = Counter(versions)
@@ -748,16 +751,15 @@ def build_packages_report(**kwargs):
     all_policies = jss_connection.Policy(
         ["general", "package_configuration", "packages"]
     ).retrieve_all()
-    all_configs = jss_connection.ComputerConfiguration().retrieve_all()
     all_packages = [(pkg.id, pkg.name) for pkg in jss_connection.Package()]
     if not all_packages:
         report = Report("Package", [], "Package Usage Report", {})
     else:
         policy_xpath = "package_configuration/packages/package"
         # patch_policy_xpath = "package_configuration/packages/package"
-        config_xpath = "packages/package"
         report = build_container_report(
-            [(all_policies, policy_xpath), (all_configs, config_xpath)], all_packages
+            [(all_policies, policy_xpath)],
+            all_packages,
         )
         report.get_result_by_name("Used").description = (
             "All packages which are installed by policies or imaging " "configurations."
@@ -787,16 +789,12 @@ def build_printers_report(**kwargs):
     jss_connection = JSSConnection.get()
 
     all_policies = jss_connection.Policy(["general", "printers"]).retrieve_all()
-    all_configs = jss_connection.ComputerConfiguration().retrieve_all()
     all_printers = [(printer.id, printer.name) for printer in jss_connection.Printer()]
     if not all_printers:
         report = Report("Printer", [], "Printer Usage Report", {})
     else:
         policy_xpath = "printers/printer"
-        config_xpath = "printers/printer"
-        report = build_container_report(
-            [(all_policies, policy_xpath), (all_configs, config_xpath)], all_printers
-        )
+        report = build_container_report([(all_policies, policy_xpath)], all_printers)
         report.get_result_by_name("Used").description = (
             "All printers which are installed by policies or imaging " "configurations."
         )
@@ -824,16 +822,12 @@ def build_scripts_report(**kwargs):
     _ = kwargs
     jss_connection = JSSConnection.get()
     all_policies = jss_connection.Policy(["general", "scripts"]).retrieve_all()
-    all_configs = jss_connection.ComputerConfiguration().retrieve_all()
     all_scripts = [(script.id, script.name) for script in jss_connection.Script()]
     if not all_scripts:
         report = Report("Script", [], "Script Usage Report", {})
     else:
         policy_xpath = "scripts/script"
-        config_xpath = "scripts/script"
-        report = build_container_report(
-            [(all_policies, policy_xpath), (all_configs, config_xpath)], all_scripts
-        )
+        report = build_container_report([(all_policies, policy_xpath)], all_scripts)
         report.get_result_by_name("Used").description = (
             "All scripts which are installed by policies or imaging " "configurations."
         )
@@ -1008,8 +1002,10 @@ def build_computer_ea_report(**kwargs):
 
     # Build results for extension attributes which aren't used in criteria.
     all_groups = jss_connection.ComputerGroup().retrieve_all()
-    all_advanced_computer_searches = jss_connection.AdvancedComputerSearch().retrieve_all()
-    all_criteria = (all_groups + all_advanced_computer_searches)
+    all_advanced_computer_searches = (
+        jss_connection.AdvancedComputerSearch().retrieve_all()
+    )
+    all_criteria = all_groups + all_advanced_computer_searches
     used_criteria = []
 
     # get fully unused
@@ -2264,7 +2260,6 @@ def remove(removal_tree):
         hasattr(jss_connection.distribution_points, "dp_info")
         and jss_connection.distribution_points.dp_info
     ):
-
         # See if we are trying to delete any packages or scripts.
         # JSS's which have been migrated store their scripts in the
         # database, and thus do not need to have them deleted.
