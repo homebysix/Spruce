@@ -4,6 +4,44 @@
 
 Spruce is a command line tool that looks for objects on your Jamf Pro server which have no current usage, are out of date, or are otherwise "crufty". It can optionally remove objects from its findings.
 
+## Requirements
+
+This version of Spruce requires Python 3.8. To create a virtual environment for Spruce, follow these steps.
+
+1. Use a local clone of relocatable-python to build a Python 3.8 framework.
+
+    ```sh
+    cd ~/src/Spruce
+    ~/src/relocatable-python/make_relocatable_python_framework.py --python-version 3.8.10 --os-version 11
+    ```
+
+    This should result in a _Python.framework_ bundle being created in your Spruce clone directory.
+
+1. Install virtualenv.
+
+    ```sh
+    Python.framework/Versions/Current/bin/python3.8 -m pip install virtualenv
+    ```
+
+1. Create a virtual environment and activate it.
+
+    ```sh
+    Python.framework/Versions/Current/bin/python3.8 -m virtualenv --python 3.8 venv
+    source venv/bin/activate
+    ```
+
+1. Install remaining requirements.
+
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+1. Verify Spruce runs by viewing its help.
+
+    ```sh
+    python3 ./spruce.py -h
+    ```
+
 ## Instructions for use
 
 **For details on how to use Spruce, please visit our [Wiki](https://github.com/jssimporter/Spruce/wiki).**

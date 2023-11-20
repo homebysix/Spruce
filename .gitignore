@@ -1,2 +1,5 @@
+*.framework
+*.plist
 *.xml
+venv/
 .vscode/*
